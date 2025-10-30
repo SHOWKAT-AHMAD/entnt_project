@@ -1,0 +1,109 @@
+.assessment-preview {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.preview-section {
+  margin-bottom: 40px;
+}
+
+.preview-section h3 {
+  margin-bottom: 12px;
+  font-size: 20px;
+  color: #333;
+}
+
+.section-description {
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.question-preview {
+  margin-bottom: 16px;
+}
+
+.question-text {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.required {
+  color: #f00;
+  margin-left: 4px;
+}
+
+.radio-group,
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-group label,
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input[type="file"] {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.error-message {
+  color: #f00;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.preview-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.submit-btn {
+  padding: 12px 24px;
+  background-color: #06c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #0052a3;
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

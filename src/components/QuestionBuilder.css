@@ -1,0 +1,175 @@
+.question-builder {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 16px;
+  background-color: white;
+  cursor: move;
+}
+
+.question-builder.dragging {
+  opacity: 0.5;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.question-text-input {
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.question-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.required-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.delete-question {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  color: #f00;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.delete-question:hover {
+  background-color: #ff00001a;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.option-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.option-item input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.option-item button {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.option-item button:hover {
+  background-color: #f0f0f0;
+  color: #f00;
+}
+
+.add-option-btn {
+  padding: 8px;
+  border: 1px dashed #999;
+  background: none;
+  border-radius: 4px;
+  color: #666;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.add-option-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.numeric-range,
+.text-validation,
+.file-validation {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.range-input,
+.validation-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.range-input input,
+.validation-input input {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100px;
+}
+
+.conditions-section {
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.add-condition {
+  margin-bottom: 12px;
+}
+
+.add-condition select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.condition-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.condition-item select {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.condition-item input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.condition-item button {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.condition-item button:hover {
+  background-color: #f0f0f0;
+  color: #f00;
+}

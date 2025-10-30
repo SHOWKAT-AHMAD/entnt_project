@@ -1,0 +1,25 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 400px;
+  box-shadow: 0 6px 18px rgb(15 20 30 / 6%);
+}
+
+.form-row { margin-bottom: 10px; }
+.form-row label { display: block; }
+.form-input { display: block; width: 100%; margin-top: 4px; }
+
+.form-error { color: red; margin-bottom: 10px; }
+
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; }

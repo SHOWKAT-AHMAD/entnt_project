@@ -1,0 +1,53 @@
+.mention-suggestions {
+  position: absolute;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  border: 1px solid #e0e0e0;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.mention-suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mention-suggestions li {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mention-suggestions li:hover,
+.mention-suggestions li.selected {
+  background-color: #f6f8fa;
+}
+
+.mention-suggestions img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.mention-suggestions .suggestion-info {
+  flex: 1;
+}
+
+.mention-suggestions .name {
+  font-weight: 500;
+  color: #24292f;
+  font-size: 0.9rem;
+}
+
+.mention-suggestions .role {
+  color: #57606a;
+  font-size: 0.8rem;
+}

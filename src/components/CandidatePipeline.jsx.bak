@@ -1,0 +1,584 @@
+import React, { useEffect, useState, useCallback } from 'react'
+
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
+
+import { fetchCandidates, patchCandidate } from '../services/candidates'
+
+import { fetchJobs } from '../services/jobs'
+
+import CandidateCard from './CandidateCard'
+
+import SkeletonCard from './SkeletonCard'
+
+import ToastNotification from './ToastNotification'
+
+import './CandidatePipeline.css'
+
+
+
+const STAGES = ['applied', 'screen', 'tech', 'offer', 'hired', 'rejected']
+
+import React, { useEffect, useState, useCallback } from 'react'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
+import { fetchCandidates, patchCandidate } from '../services/candidates'
+import { fetchJobs } from '../services/jobs'
+import CandidateCard from './CandidateCard'
+import SkeletonCard from './SkeletonCard'
+import ToastNotification from './ToastNotification'
+import './CandidatePipeline.css'
+
+const STAGES = ['applied', 'screen', 'tech', 'offer', 'hired', 'rejected']
+
+const KEYBOARD_SHORTCUTS = {
+  MOVE_RIGHT: ['ArrowRight'],
+  MOVE_LEFT: ['ArrowLeft'],
+  CANCEL: ['Escape']
+}
+
+
+
+function getNextStage(currentStage) {function getNextStage(currentStage) {
+
+  const currentIndex = STAGES.indexOf(currentStage)  const currentIndex = STAGES.indexOf(currentStage)
+
+  return currentIndex < STAGES.length - 1 ? STAGES[currentIndex + 1] : null  return currentIndex < STAGES.length - 1 ? STAGES[currentIndex + 1] : null
+
+}}
+
+
+
+function getPreviousStage(currentStage) {function getPreviousStage(currentStage) {
+
+  const currentIndex = STAGES.indexOf(currentStage)  const currentIndex = STAGES.indexOf(currentStage)
+
+  return currentIndex > 0 ? STAGES[currentIndex - 1] : null  return currentIndex > 0 ? STAGES[currentIndex - 1] : null
+
+}}
+
+
+
+export default function CandidatePipeline() {export default function CandidatePipeline() {
+
+  const [columns, setColumns] = useState(() => STAGES.reduce((acc,s)=>{acc[s]=[];return acc},{}))  const [columns, setColumns] = useState(() => STAGES.reduce((acc,s)=>{acc[s]=[];return acc},{}) )
+
+  const [loading, setLoading] = useState(true)  const [loading, setLoading] = useState(() => STAGES.reduce((acc,s)=>{acc[s]=false;return acc},{}))
+
+  const [updatingIds, setUpdatingIds] = useState(new Set())  const [hasMore, setHasMore] = useState(() => STAGES.reduce((acc,s)=>{acc[s]=true;return acc},{}))
+
+  const [jobs, setJobs] = useState([])  const [pages, setPages] = useState(() => STAGES.reduce((acc,s)=>{acc[s]=1;return acc},{}))
+
+  const [selectedJobId, setSelectedJobId] = useState('')  const [updatingIds, setUpdatingIds] = useState(new Set())
+
+  const [search, setSearch] = useState('')  const [jobs, setJobs] = useState([])
+
+  const [toast, setToast] = useState(null)  const [selectedJobId, setSelectedJobId] = useState('')
+
+  const [activeCardId, setActiveCardId] = useState(null)  const [search, setSearch] = useState('')
+
+  const [toast, setToast] = useState(null)
+
+  const updateCandidateStage = useCallback(async (candidateId, from, to, index = 0) => {  const [activeCardId, setActiveCardId] = useState(null)
+
+    const prevFrom = [...columns[from]]
+
+    const prevTo = [...columns[to]]  const updateCandidateStage = useCallback(async (candidateId, from, to, index = 0) => {
+
+    const moved = prevFrom.find(c => c.id === candidateId)    const prevFrom = [...columns[from]]
+
+    if (!moved) return    const prevTo = [...columns[to]]
+
+    const moved = prevFrom.find(c => c.id === candidateId)
+
+    const newFrom = prevFrom.filter(c => c.id !== candidateId)    if (!moved) return
+
+    const newTo = [...prevTo]
+
+    newTo.splice(index, 0, { ...moved, stage: to })    const newFrom = prevFrom.filter(c => c.id !== candidateId)
+
+    const newTo = [...prevTo]
+
+    // Optimistic update    newTo.splice(index, 0, { ...moved, stage: to })
+
+    setColumns(cols => ({ ...cols, [from]: newFrom, [to]: newTo }))
+
+    setUpdatingIds(s => new Set(s).add(candidateId))    // Optimistic update
+
+    setColumns(cols => ({ ...cols, [from]: newFrom, [to]: newTo }))
+
+    try {    setUpdatingIds(s => new Set(s).add(candidateId))
+
+      await patchCandidate(candidateId, { stage: to })
+
+      setUpdatingIds(s => { const ns = new Set(s); ns.delete(candidateId); return ns })    try {
+
+      setToast({       await patchCandidate(candidateId, { stage: to })
+
+        message: `Moved candidate to ${to.charAt(0).toUpperCase() + to.slice(1)} stage`,       // Success - remove updating and show success toast
+
+        type: 'success'       setUpdatingIds(s => { const ns = new Set(s); ns.delete(candidateId); return ns })
+
+      })      setToast({ 
+
+    } catch (err) {        message: `Moved candidate to ${to.charAt(0).toUpperCase() + to.slice(1)} stage`, 
+
+      console.error('Failed to update candidate stage, rolling back', err)        type: 'success' 
+
+      setColumns(cols => ({ ...cols, [from]: prevFrom, [to]: prevTo }))      })
+
+      setUpdatingIds(s => { const ns = new Set(s); ns.delete(candidateId); return ns })    } catch (err) {
+
+      setToast({       console.error('Failed to update candidate stage, rolling back', err)
+
+        message: 'Failed to move candidate. Please try again.',       // Rollback and show error toast
+
+        type: 'error'       setColumns(cols => ({ ...cols, [from]: prevFrom, [to]: prevTo }))
+
+      })      setUpdatingIds(s => { const ns = new Set(s); ns.delete(candidateId); return ns })
+
+    }      setToast({ 
+
+  }, [columns])        message: 'Failed to move candidate. Please try again.', 
+
+        type: 'error' 
+
+  const onDragEnd = useCallback((result) => {      })
+
+    const { destination, source, draggableId } = result    }
+
+    if (!destination) return  }, [])
+
+    const from = source.droppableId
+
+    const to = destination.droppableId  const onDragEnd = useCallback((result) => {
+
+    if (from === to) return    const { destination, source, draggableId } = result
+
+    if (!destination) return
+
+    const candidateId = Number(draggableId)    const from = source.droppableId
+
+    updateCandidateStage(candidateId, from, to, destination.index)    const to = destination.droppableId
+
+  }, [updateCandidateStage])    if (from === to) return
+
+
+
+  // Handle keyboard shortcuts    const candidateId = Number(draggableId)
+
+  useEffect(() => {    updateCandidateStage(candidateId, from, to, destination.index)
+
+    function handleKeyDown(e) {  }, [updateCandidateStage])
+
+      if (!activeCardId) return
+
+        // Handle keyboard shortcuts
+
+      const candidate = Object.values(columns)  useEffect(() => {
+
+        .flat()    function handleKeyDown(e) {
+
+        .find(c => c.id === Number(activeCardId))      if (!activeCardId) return
+
+            
+
+      if (!candidate) return      const candidate = Object.values(columns)
+
+        .flat()
+
+      if (KEYBOARD_SHORTCUTS.MOVE_RIGHT.includes(e.key)) {        .find(c => c.id === Number(activeCardId))
+
+        const nextStage = getNextStage(candidate.stage)      
+
+        if (nextStage) {      if (!candidate) return
+
+          updateCandidateStage(candidate.id, candidate.stage, nextStage)
+
+        }      if (KEYBOARD_SHORTCUTS.MOVE_RIGHT.includes(e.key)) {
+
+      } else if (KEYBOARD_SHORTCUTS.MOVE_LEFT.includes(e.key)) {        const nextStage = getNextStage(candidate.stage)
+
+        const prevStage = getPreviousStage(candidate.stage)        if (nextStage) {
+
+        if (prevStage) {          updateCandidateStage(candidate.id, candidate.stage, nextStage)
+
+          updateCandidateStage(candidate.id, candidate.stage, prevStage)        }
+
+        }      } else if (KEYBOARD_SHORTCUTS.MOVE_LEFT.includes(e.key)) {
+
+      } else if (KEYBOARD_SHORTCUTS.CANCEL.includes(e.key)) {        const prevStage = getPreviousStage(candidate.stage)
+
+        setActiveCardId(null)        if (prevStage) {
+
+      }          updateCandidateStage(candidate.id, candidate.stage, prevStage)
+
+    }        }
+
+      } else if (KEYBOARD_SHORTCUTS.CANCEL.includes(e.key)) {
+
+    window.addEventListener('keydown', handleKeyDown)        setActiveCardId(null)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)      }
+
+  }, [activeCardId, columns, updateCandidateStage])    }
+
+
+
+  const loadCandidates = useCallback(async () => {    window.addEventListener('keydown', handleKeyDown)
+
+    setLoading(true)    return () => window.removeEventListener('keydown', handleKeyDown)
+
+    const newColumns = STAGES.reduce((acc,s)=>{acc[s]=[];return acc},{})  }, [activeCardId, columns, updateCandidateStage])
+
+    
+
+    try {  const searchCandidates = useCallback((candidates, searchTerm) => {
+
+      // Load each stage in parallel    if (!searchTerm) return candidates
+
+      const loadPromises = STAGES.map(stage =>     searchTerm = searchTerm.toLowerCase()
+
+        fetchCandidates({ stage, search, jobId: selectedJobId })    const result = STAGES.reduce((acc, s) => { acc[s] = []; return acc; }, {})
+
+          .then(res => {    
+
+            console.log(`Loaded ${res.items?.length || 0} candidates for ${stage} stage`)    STAGES.forEach(stage => {
+
+            newColumns[stage] = res.items || []      result[stage] = (candidates[stage] || []).filter(c => 
+
+          })        c.name.toLowerCase().includes(searchTerm) || 
+
+          .catch(err => {        c.email.toLowerCase().includes(searchTerm)
+
+            console.error(`Failed to load ${stage} stage:`, err)      )
+
+            setToast({    })
+
+              message: `Failed to load ${stage} stage`,    return result
+
+              type: 'error'  }, [])
+
+            })
+
+          })  const filteredColumns = useMemo(() => 
+
+      )    searchCandidates(allCandidates, search)
+
+  , [allCandidates, search, searchCandidates])
+
+      await Promise.all(loadPromises)
+
+      console.log('Setting columns with data:', newColumns)  const loadCandidates = useCallback(async (stage) => {
+
+      setColumns(newColumns)    // Mark stage as loading
+
+    } finally {    setLoading(prev => ({ ...prev, [stage]: true }))
+
+      setLoading(false)    
+
+    }    try {
+
+  }, [search, selectedJobId])      const res = await fetchCandidates({ 
+
+        stage,
+
+  // Initial load of jobs        jobId: selectedJobId,
+
+  useEffect(() => {        search,
+
+    let mounted = true        page: pages[stage],
+
+    ;(async () => {        pageSize: 20 // Load 20 candidates per stage
+
+      try {      })
+
+        const res = await fetchJobs({ pageSize: 200 })      
+
+        if (!mounted) return      const items = res.items || []
+
+        console.log('Loaded jobs:', res.items)      const hasMoreItems = items.length === 20 // If we got a full page, there might be more
+
+        setJobs(res.items || [])      
+
+      } catch (err) {      setColumns(prev => ({
+
+        console.error('Failed to load jobs for pipeline filter', err)        ...prev,
+
+      }        [stage]: pages[stage] === 1 ? items : [...prev[stage], ...items]
+
+    })()      }))
+
+    return () => { mounted = false }      
+
+  }, [])      setHasMore(prev => ({ ...prev, [stage]: hasMoreItems }))
+
+      
+
+  // Reload when filters change    } catch (e) {
+
+  useEffect(() => {      console.error(`Failed to load candidates for ${stage} stage`, e)
+
+    loadCandidates()      setToast({ 
+
+  }, [loadCandidates])        message: `Failed to load candidates for ${stage} stage`, 
+
+        type: 'error' 
+
+  return (      })
+
+    <div className="candidate-pipeline">    } finally {
+
+      <div className="pipeline-header">      setLoading(prev => ({ ...prev, [stage]: false }))
+
+        <div className="pipeline-searchbar">    }
+
+          <div className="search-wrapper">  }, [selectedJobId, search, pages])
+
+            <input
+
+              className="pipeline-search-input"  // Initial load of jobs
+
+              type="text"  useEffect(() => {
+
+              placeholder="🔍 Search candidates by name or email"    let mounted = true
+
+              value={search}    ;(async () => {
+
+              onChange={e => setSearch(e.target.value)}      try {
+
+            />        const res = await fetchJobs({ pageSize: 200 })
+
+            <div className="search-info">        if (!mounted) return
+
+              {search && Object.values(columns).flat().length} results        setJobs(res.items || [])
+
+            </div>      } catch (err) {
+
+          </div>        console.error('Failed to load jobs for pipeline filter', err)
+
+        </div>      }
+
+        <div className="pipeline-job-select">    })()
+
+          <label htmlFor="job-select">Job:</label>    return () => { mounted = false }
+
+          <select id="job-select" value={selectedJobId} onChange={e => setSelectedJobId(e.target.value)}>  }, [])
+
+            <option value="">All jobs</option>
+
+            {jobs.map(j => (  // Load candidates for each stage
+
+              <option key={j.id} value={j.id}>{j.title}</option>  useEffect(() => {
+
+            ))}    // Reset pagination when filters change
+
+          </select>    setPages(STAGES.reduce((acc,s)=>{acc[s]=1;return acc},{}))
+
+        </div>    setHasMore(STAGES.reduce((acc,s)=>{acc[s]=true;return acc},{}))
+
+      </div>    setColumns(STAGES.reduce((acc,s)=>{acc[s]=[];return acc},{}))
+
+    
+
+      <div className="pipeline-board">    // Load first page for each stage
+
+        {loading ? (    STAGES.forEach(stage => {
+
+          <div className="pipeline-columns">      loadCandidates(stage)
+
+            {STAGES.map(stage => (    })
+
+              <div key={stage} className="pipeline-column">  }, [loadCandidates, selectedJobId, search])
+
+                <div className="column-header">{stage.charAt(0).toUpperCase() + stage.slice(1)} <span className="count">...</span></div>
+
+                <div className="column-body">  // Function to handle infinite scroll for a stage
+
+                  {[1,2,3].map(i => (  const handleScroll = useCallback((stage, e) => {
+
+                    <SkeletonCard key={i} />    const target = e.target
+
+                  ))}    if (
+
+                </div>      !loading[stage] && 
+
+              </div>      hasMore[stage] && 
+
+            ))}      target.scrollHeight - target.scrollTop <= target.clientHeight + 100
+
+          </div>    ) {
+
+        ) : (      setPages(prev => ({ ...prev, [stage]: prev[stage] + 1 }))
+
+          <DragDropContext onDragEnd={onDragEnd}>      loadCandidates(stage)
+
+            <div className="pipeline-columns">    }
+
+              {STAGES.map(stage => (  }, [loading, hasMore, loadCandidates])
+
+                <Droppable droppableId={stage} key={stage}>
+
+                  {(provided) => (  return (
+
+                    <div className="pipeline-column" ref={provided.innerRef} {...provided.droppableProps}>    <div className="candidate-pipeline">
+
+                      <div className="column-header">      <div className="pipeline-header">
+
+                        {stage.charAt(0).toUpperCase() + stage.slice(1)}         <div className="pipeline-searchbar">
+
+                        <span className="count">{(columns[stage]||[]).length}</span>          <div className="search-wrapper">
+
+                      </div>            <input
+
+                      <div className="column-body">              className="pipeline-search-input"
+
+                        {(columns[stage]||[]).length === 0 ? (              type="text"
+
+                          <div className="empty-state">              placeholder="🔍 Search candidates by name or email"
+
+                            {stage === 'rejected' ?               value={search}
+
+                              'No rejected candidates' :              onChange={e => setSearch(e.target.value)}
+
+                              `No candidates in ${stage} stage`            />
+
+                            }            <div className="search-info">
+
+                          </div>              {search && Object.values(filteredColumns).flat().length} results
+
+                        ) : (            </div>
+
+                          (columns[stage]||[]).map((c, idx) => (          </div>
+
+                            <Draggable draggableId={String(c.id)} index={idx} key={c.id}>        </div>
+
+                              {(prov) => (        <div className="pipeline-job-select">
+
+                                <div           <label htmlFor="job-select">Job:</label>
+
+                                  ref={prov.innerRef}           <select id="job-select" value={selectedJobId} onChange={e => setSelectedJobId(e.target.value)}>
+
+                                  {...prov.draggableProps}             <option value="">All jobs</option>
+
+                                  {...prov.dragHandleProps}            {jobs.map(j => (
+
+                                  tabIndex={0}              <option key={j.id} value={j.id}>{j.title}</option>
+
+                                  className={activeCardId === String(c.id) ? 'focused' : ''}            ))}
+
+                                  onFocus={() => setActiveCardId(String(c.id))}          </select>
+
+                                  onBlur={() => setActiveCardId(null)}        </div>
+
+                                >      </div>
+
+                                  <CandidateCard       <div className="pipeline-board">
+
+                                    candidate={c}         {Object.values(loading).every(Boolean) ? (
+
+                                    updating={updatingIds.has(c.id)}           <div className="pipeline-columns">
+
+                                    jobTitle={jobs.find(j => j.id === c.jobId)?.title}             {STAGES.map(stage => (
+
+                                  />              <div key={stage} className="pipeline-column">
+
+                                </div>                <div className="column-header">{stage.charAt(0).toUpperCase() + stage.slice(1)} <span className="count">...</span></div>
+
+                              )}                <div className="column-body">
+
+                            </Draggable>                  {[1,2,3].map(i => (
+
+                          ))                    <SkeletonCard key={i} />
+
+                        )}                  ))}
+
+                        {provided.placeholder}                </div>
+
+                      </div>              </div>
+
+                    </div>            ))}
+
+                  )}          </div>
+
+                </Droppable>        ) : (
+
+              ))}          <DragDropContext onDragEnd={onDragEnd}>
+
+            </div>            <div className="pipeline-columns">
+
+          </DragDropContext>              {STAGES.map(stage => (
+
+        )}                <Droppable droppableId={stage} key={stage}>
+
+      </div>                  {(provided) => (
+
+                    <div className="pipeline-column" ref={provided.innerRef} {...provided.droppableProps}>
+
+      {toast && (                      <div className="column-header">{stage.charAt(0).toUpperCase() + stage.slice(1)} <span className="count">{(columns[stage]||[]).length}</span></div>
+
+        <ToastNotification                       <div 
+
+          {...toast}                        className="column-body"
+
+          onClose={() => setToast(null)}                        onScroll={e => handleScroll(stage, e)}
+
+        />                      >
+
+      )}                        {(columns[stage]||[]).length === 0 && !loading[stage] ? (
+
+    </div>                          <div className="empty-state">
+
+  )                            {stage === 'rejected' ? 
+
+}                              'No rejected candidates' :
+                              `No candidates in ${stage} stage`
+                            }
+                          </div>
+                        ) : (
+                          <>
+                            {(columns[stage]||[]).map((c, idx) => (
+                              <Draggable draggableId={String(c.id)} index={idx} key={c.id}>
+                                {(prov) => (
+                                  <div 
+                                    ref={prov.innerRef} 
+                                    {...prov.draggableProps} 
+                                    {...prov.dragHandleProps}
+                                    tabIndex={0}
+                                    className={activeCardId === String(c.id) ? 'focused' : ''}
+                                    onFocus={() => setActiveCardId(String(c.id))}
+                                    onBlur={() => setActiveCardId(null)}
+                                  >
+                                    <CandidateCard 
+                                      candidate={c} 
+                                      updating={updatingIds.has(c.id)} 
+                                      jobTitle={jobs.find(j => j.id === c.jobId)?.title} 
+                                    />
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {loading[stage] && (
+                              <div className="loading-more">
+                                <SkeletonCard />
+                              </div>
+                            )}
+                          </>
+                        )}
+                        {provided.placeholder}
+                      </div>
+                    </div>
+                  )}
+                </Droppable>
+              ))}
+            </div>
+          </DragDropContext>
+        )}
+      </div>
+      {toast && (
+        <ToastNotification 
+          {...toast}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </div>
+  )
+}
