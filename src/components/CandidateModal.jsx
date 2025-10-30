@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createCandidate, patchCandidate } from '../services/candidates'
 import './CandidateModal.css'
+import { showGlobalToast } from './ToastNotification'
 
 export default function CandidateModal({ job, candidate = null, onClose, onApplied, onSaved }) {
   const [name, setName] = useState(candidate?.name || '')
@@ -20,12 +21,18 @@ export default function CandidateModal({ job, candidate = null, onClose, onAppli
         await patchCandidate(candidate.id, { name, email })
         if (onSaved) onSaved()
       } else {
-        await createCandidate({ name, email, jobId: job?.id })
-        if (onApplied) onApplied()
+        const created = await createCandidate({ name, email, jobId: job?.id })
+        // If no email provided, use proper fallback format
+        if (!email) {
+          created.email = `candidate${Date.now()}@gmail.com`
+        }
+        // Broadcast event for any open views to update immediately
+        try { window.dispatchEvent(new CustomEvent('candidate-created', { detail: created })) } catch {}
+        if (onApplied) onApplied(created)
       }
     } catch (err) {
       console.error('Failed to submit candidate', err)
-      alert('Failed to save. Try again.')
+      showGlobalToast('Failed to save. Try again.', 'error')
     } finally {
       setLoading(false)
     }

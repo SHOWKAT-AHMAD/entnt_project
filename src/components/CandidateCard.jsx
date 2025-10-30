@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import CandidateNotes from './CandidateNotes'
 import './CandidateCard.css'
 
-export default function CandidateCard({ candidate, updating = false, jobTitle, onUpdateNotes }) {
+export default function CandidateCard({ candidate, updating = false, jobTitle, onUpdateNotes, children, actionButtons }) {
   if (!candidate) return null
   return (
     <div className="candidate-card">
@@ -14,15 +14,23 @@ export default function CandidateCard({ candidate, updating = false, jobTitle, o
         </div>
         <div className="candidate-meta">
           <span className={`candidate-stage stage-${candidate.stage || 'applied'}`}>{candidate.stage || 'applied'}</span>
-          <span className="candidate-job" title={jobTitle}>
-            {jobTitle || `Job #${candidate.jobId}`}
-          </span>
         </div>
+      </div>
+      {/* Job role always below header for clear alignment */}
+      <div className="candidate-job" title={jobTitle} style={{marginBottom: 8}}>
+        {jobTitle || `Job #${candidate.jobId}`}
       </div>
       <CandidateNotes
         notes={candidate.notes}
         onSave={(notes) => onUpdateNotes(candidate.id, notes)}
       />
+      {/* Render actions if present, always in styled wrapper */}
+      {(children || actionButtons) && (
+        <div className="candidate-actions">
+          {actionButtons ? actionButtons : null}
+          {children ? children : null}
+        </div>
+      )}
       {updating && (
         <div className="candidate-updating" aria-hidden>
           <div className="dot-spinner" />

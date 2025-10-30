@@ -111,63 +111,66 @@ export default function CandidateDetail() {
   }
 
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-        <h2 style={{ margin:0 }}>{candidate.name}</h2>
-        <div style={{ display:'flex', gap:8 }}>
-          <button className="btn" onClick={() => setEditing(true)}>Edit</button>
+    <div className="candidate-detail-main" style={{ padding: 0, maxWidth: 700, margin: '2.5rem auto', position: 'relative', background: '#fff', borderRadius: '18px', boxShadow: '0 4px 20px #176ddb18', paddingTop: 38, paddingBottom: 36, paddingLeft: 38, paddingRight: 38 }}>
+      {/* Floating status - moved slightly up and right */}
+      <span className="candidate-stage" style={{ position: 'absolute', top: 10, right: 34 }}>{candidate.stage?.toUpperCase() || 'APPLIED'}</span>
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', marginBottom: 20, position:'relative', zIndex:1 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, width: '100%' }}>
+          <h2 style={{ margin:0, flex:1 }}>{candidate.name}</h2>
+          <button className="btn" onClick={() => setEditing(true)} style={{ minWidth: 70, marginTop: 2 }}>Edit</button>
         </div>
       </div>
-
-      <div style={{ marginTop: 12 }}>
+      {/* Candidate info */}
+      <div style={{ marginBottom: 16, fontSize: '1.07rem', color: '#315187', letterSpacing: 0.01 }}>
         <div><strong>Email:</strong> {candidate.email}</div>
-        <div><strong>Stage:</strong> {candidate.stage}</div>
-        <div><strong>Job ID:</strong> {candidate.jobId}</div>
+        <div><strong>Job:</strong> <span className="candidate-job" style={{ fontWeight: 700 }}>{candidate.jobTitle || `Job #${candidate.jobId}`}</span></div>
       </div>
-
       {editing && (
         <CandidateModal candidate={candidate} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); refresh() }} />
       )}
-      
-      <div className="candidate-timeline">
-        <h4>Timeline</h4>
+      {/* Timeline Section */}
+      <div className="candidate-timeline" style={{marginTop: 20}}>
+        <h4 style={{ marginBottom: '0.6em', color: '#166790', fontWeight: 700, fontSize: '1.15rem' }}>Timeline</h4>
+        {Array.isArray(candidate.history) && candidate.history.length === 0 && (
+          <div className="muted" style={{padding:'0.7em 0'}}>No status changes yet.</div>
+        )}
         {Array.isArray(candidate.history) && candidate.history.slice().reverse().map((h, idx) => (
-          <div key={idx} className="timeline-item">
-            <div className="timeline-time">{new Date(h.at).toLocaleString()}</div>
-            <div>{h.from ? `${h.from} → ${h.to}` : `Initial: ${h.to}`}</div>
+          <div key={idx} className="timeline-item" style={{ borderLeft: '3px solid #ddeafe', paddingLeft: 13, marginBottom: '1.15em', position:'relative' }}>
+            <span className="timeline-dot" style={{ position: 'absolute', left: -10, top: 4, width: 10, height: 10, borderRadius: 5, background: '#16bb74', display: 'inline-block', boxShadow: '0 1px 4px #16bb7424' }} />
+            <div className="timeline-time" style={{ fontSize: '0.93em', color: '#7ea6c7', marginBottom: 2 }}>{new Date(h.at).toLocaleString()}</div>
+            <div style={{ color: '#18886a', fontWeight: '600', fontSize:'1.04em' }}>{h.from ? `${h.from} → ${h.to}` : `Initial: ${h.to}`}</div>
           </div>
         ))}
       </div>
-
-      <div className="notes">
-        <h4>Notes</h4>
+      {/* Notes Section Modernized */}
+      <div className="notes" style={{ marginTop: 36 }}>
+        <h4 style={{ color: '#1956b6', fontWeight: 700, fontSize:'1.12em',marginBottom:10 }}>Notes</h4>
         {notes && notes.length === 0 && <div className="muted">No notes yet.</div>}
         {notes && notes.map(n => (
-          <div key={n.id} className="note">
-            <div style={{ fontSize: 12, color: 'var(--muted,#666)' }}>{new Date(n.at).toLocaleString()}</div>
-            <div dangerouslySetInnerHTML={{ __html: renderMentions(n.text) }} />
+          <div key={n.id} className="note" style={{ marginBottom: 10, border: 'none', borderBottom: '1.25px solid #f0f4f7', padding:'0.7em 0 0.3em 0' }}>
+            <div style={{ fontSize: 12, color: '#94a2be', marginBottom: 2 }}>{new Date(n.at).toLocaleString()}</div>
+            <div dangerouslySetInnerHTML={{ __html: renderMentions(n.text) }} style={{ color:'#2956a4',fontWeight:500,fontSize:'1.03em' }} />
           </div>
         ))}
-
-        <div style={{ position: 'relative' }}>
-          <div className="note-input">
-            <input
-              placeholder="Write a note — use @ to mention"
-              value={noteText}
-              onChange={(e) => onNoteChange(e.target.value)}
-              onFocus={() => setShowSuggest(true)}
-              onBlur={() => setTimeout(()=>setShowSuggest(false), 200)}
-            />
-            <button className="btn btn-primary" onClick={handleAddNote} disabled={!noteText.trim()}>Add</button>
-          </div>
-          {showSuggest && suggestions.length > 0 && (
-            <ul className="mention-suggest" ref={suggestRef}>
-              {suggestions.map((s, i) => (
-                <li key={i} onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s) }}>{s}</li>
-              ))}
-            </ul>
-          )}
+        {/* Add note UI, matching the rest of app */}
+        <div className="note-input" style={{ marginTop: 12, display:'flex', gap:8 }}>
+          <input
+            style={{ flex:1, borderRadius:8, border:'1.5px solid #ddeafe', background:'#f6fafd', padding:'0.6em 1em', fontSize:'1.01em', fontFamily:'inherit' }}
+            placeholder="Write a note — use @ to mention"
+            value={noteText}
+            onChange={(e) => onNoteChange(e.target.value)}
+            onFocus={() => setShowSuggest(true)}
+            onBlur={() => setTimeout(()=>setShowSuggest(false), 200)}
+          />
+          <button className="btn btn-primary" style={{ borderRadius: 8, fontWeight: 600 }} onClick={handleAddNote} disabled={!noteText.trim()}>Add</button>
         </div>
+        {showSuggest && suggestions.length > 0 && (
+          <ul className="mention-suggest" ref={suggestRef} style={{marginTop:3}}>
+            {suggestions.map((s, i) => (
+              <li key={i} style={{fontSize:'1em',padding:'0.4em 0.8em'}} onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s) }}>{s}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )

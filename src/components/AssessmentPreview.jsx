@@ -8,17 +8,19 @@ const AssessmentPreview = ({ jobId, sections }) => {
   const [validationErrors, setValidationErrors] = useState({})
 
   useEffect(() => {
+    if (!jobId) return
     // Load saved responses from localStorage
-    const savedResponses = localStorage.getItem('assessment_responses')
+    const savedResponses = localStorage.getItem(`assessment_responses_${jobId}`)
     if (savedResponses) {
       setResponses(JSON.parse(savedResponses))
     }
-  }, [])
+  }, [jobId])
 
   useEffect(() => {
+    if (!jobId) return
     // Save responses to localStorage
-    localStorage.setItem('assessment_responses', JSON.stringify(responses))
-  }, [responses])
+    localStorage.setItem(`assessment_responses_${jobId}`, JSON.stringify(responses))
+  }, [responses, jobId])
 
   const validateResponse = (question, value) => {
     if (question.required && !value) {

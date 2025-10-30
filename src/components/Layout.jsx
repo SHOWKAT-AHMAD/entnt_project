@@ -126,13 +126,13 @@ export default function Layout() {
           <div className="footer-col">
             <h4>Contact</h4>
             <div style={{ fontSize: '0.9rem' }}>
-              <p style={{ marginBottom: '0.5rem' }}>Email: support@talentflow.example</p>
+              <p style={{ marginBottom: '0.5rem' }}>Email: support@talentflow.com</p>
               <p>Phone: (555) 123-4567</p>
             </div>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2024 TalentFlow. All rights reserved.</p>
+          <p>© 2024 TalentFlow. Built with care by the TalentFlow Team. For recruitment solutions and assistance, visit www.talentflow.com or email support@talentflow.com</p>
         </div>
       </footer>
 

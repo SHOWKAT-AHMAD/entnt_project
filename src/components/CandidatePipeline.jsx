@@ -232,6 +232,23 @@ export default function CandidatePipeline() {
     }
   }, [toast])
 
+  // Listen for external candidate creation to live-update pipeline
+  useEffect(() => {
+    function onCreated(e) {
+      const c = e.detail
+      if (!c || !c.id) return
+      // Respect job filter
+      if (selectedJobId && String(c.jobId) !== String(selectedJobId)) return
+      const stage = (c.stage || 'applied')
+      setColumns(prev => ({
+        ...prev,
+        [stage]: [c, ...(prev[stage] || [])]
+      }))
+    }
+    window.addEventListener('candidate-created', onCreated)
+    return () => window.removeEventListener('candidate-created', onCreated)
+  }, [selectedJobId])
+
   return (
     <div className="candidate-pipeline">
       <div className="pipeline-header">

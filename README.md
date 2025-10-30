@@ -1,16 +1,42 @@
-# React + Vite
+# TalentFlow Hiring Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TalentFlow is a modern, full-featured recruitment platform built with React and Vite. It supports:
 
-Currently, two official plugins are available:
+- Job management (create, archive, manage jobs)
+- Candidate pipeline (drag-and-drop stages, search, live apply)
+- Assessments per job (powerful builder, preview, validation, persistence)
+- Dual-pane builder/preview for assessment authoring
+- Authentication modals (login/signup) with demo credentials
+- Responsive, branded UI—beautiful home, jobs, candidates, assessments sections
+- State persistence: assessment drafts and candidate answers are locally cached per-job
+- Universal error/success notifications
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Local Development
 
-## React Compiler
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Run and open:**
+   ```bash
+   npm run dev
+   # App available at http://localhost:5173
+   ```
+3. **Demo login:**
+   - Email: `hr@example.com` / Password: `demo123`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Key Features
+- **Jobs Page:** List/add/archive jobs, access assessments
+- **Candidates Pipeline:** Kanban/drag-and-drop, search, real-time updates when applied
+- **Assessment Builder:** Per-job, create sections and all question types, conditional logic, live preview, auto-save, validation
+- **Submissions:** Candidates apply live, answers persist per assessment
+- **Modern UI/UX:** Sticky header/footer, all forms styled, mobile-friendly
 
-## Expanding the ESLint configuration
+## For Developers
+- All local storage keys follow per-job pattern: `assessment_draft_{jobId}` and `assessment_responses_{jobId}`
+- Global toasts for errors, feedback everywhere
+- Fully modular components in `/src/components` and pages in `/src/pages`
+- Mock server for API endpoints (MSW)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+© 2024 TalentFlow. Contact: support@talentflow.com

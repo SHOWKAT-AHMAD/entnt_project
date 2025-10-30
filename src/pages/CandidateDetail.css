@@ -1,11 +1,89 @@
-.candidate-detail { max-width:900px; margin:2rem auto; padding:1rem }
-.candidate-timeline { margin-top:1rem; border-left:2px solid var(--border-color,#eee); padding-left:1rem }
-.timeline-item { margin-bottom:0.75rem }
-.timeline-time { font-size:0.85rem; color:var(--muted,#666) }
-.notes { margin-top:1rem }
-.note { padding:0.5rem; border:1px solid var(--border-color,#e6e6e6); border-radius:6px; margin-bottom:0.5rem }
-.mentions { color:var(--primary-color,#0b63d6); font-weight:600 }
-.note-input { display:flex; gap:0.5rem; margin-top:0.5rem }
-.mention-suggest { position: absolute; background:var(--surface,#fff); border:1px solid var(--border-color,#e6e6e6); border-radius:6px; z-index:80; max-height:200px; overflow:auto }
-.mention-suggest li { padding:0.5rem; cursor:pointer }
-.mention-suggest li:hover { background: #f5f5f5 }
+.candidate-detail-main {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px #176ddb18;
+  max-width: 700px;
+  margin: 2.5rem auto;
+  padding: 32px 38px 34px 38px;
+  position: relative;
+}
+.candidate-stage {
+  position: absolute;
+  top: 20px;
+  right: 26px;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #17a76a;
+  background: none;
+  border: none;
+  box-shadow: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
+  padding: 0;
+  z-index: 2;
+}
+.candidate-timeline {
+  margin-top: 1.5rem;
+  border-left: 3px solid #ddeafe;
+  padding-left: 1.4rem;
+}
+.timeline-item {
+  margin-bottom:1.35rem;
+  position:relative;
+}
+.timeline-dot {
+  position: absolute;
+  left: -13px; top: 5px;
+  width: 13px; height: 13px;
+  border-radius: 8px;
+  background: #16bb74;
+  display: inline-block;
+  box-shadow: 0 1px 4px #16bb7424;
+  border: 2px solid #eafceb;
+}
+.timeline-time { font-size: 0.93rem; color: #7ea6c7; margin-bottom: 2px; }
+.notes {
+  margin-top: 2.5rem;
+  background: #f8fbff;
+  border-radius: 10px;
+  box-shadow: 0 1px 10px #3b7ce112;
+  padding: 1.6em 1.1em 1.3em 1.1em;
+}
+.note { border: none; border-bottom:1.25px solid #f0f4f7; padding:0.7em 0 0.3em 0; }
+.mentions { color: #0b63d6; font-weight: 700 }
+.note-input {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.1rem;
+  align-items: flex-end;
+}
+.mention-suggest {
+  background: #f7fafd;
+  border: 1px solid #ddeafe;
+  border-radius: 7px;
+  box-shadow: 0 3px 14px #1585ee10;
+  position: absolute;
+  left: 0;
+  min-width: 180px;
+  z-index: 4;
+  margin-top: 2px;
+}
+.mention-suggest li {
+  padding: 0.44em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.14s;
+  border-radius: 4px;
+}
+.mention-suggest li:hover {
+  background: #eaf4fe;
+}
+@media (width <= 720px) {
+  .candidate-detail-main { padding: 18px 4vw 20px 4vw; }
+  .candidate-timeline { padding-left: 1vw; }
+  .notes { padding: 1.3em 4vw 1.1em 4vw; }
+}

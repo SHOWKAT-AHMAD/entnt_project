@@ -6,6 +6,7 @@ import JobModal from '../components/JobModal'
 import CandidateModal from '../components/CandidateModal'
 import Spinner from '../components/Spinner'
 import './Jobs.css'
+import ToastNotification, { showGlobalToast } from '../components/ToastNotification'
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([])
@@ -20,6 +21,7 @@ export default function JobsPage() {
   const [showCandidateModal, setShowCandidateModal] = useState(false)
   const [applyJob, setApplyJob] = useState(null)
   const [updatingIds, setUpdatingIds] = useState([]) // track jobs currently updating (archive/unarchive)
+  const [globalToast, setGlobalToast] = useState(null)
 
   const loadJobs = useCallback(() => {
     setLoading(true)
@@ -34,6 +36,15 @@ export default function JobsPage() {
   useEffect(() => {
     loadJobs()
   }, [loadJobs])
+
+  useEffect(() => {
+    function onToast(e) {
+      setGlobalToast(e.detail)
+      setTimeout(() => setGlobalToast(null), e.detail?.duration || 3200)
+    }
+    window.addEventListener('global-toast', onToast)
+    return () => window.removeEventListener('global-toast', onToast)
+  }, [])
 
   const handleDragEnd = async (result) => {
     if (!result.destination) return
@@ -85,6 +96,15 @@ export default function JobsPage() {
     return () => window.removeEventListener('apply-to-job', onApply)
   }, [handleApplyToJob])
 
+  // Listen for created candidates to show message
+  useEffect(() => {
+    function onCreated(e) {
+      showGlobalToast(`Applied to ${e?.detail?.jobId ? 'Job #' + e.detail.jobId : 'job'}`, 'success')
+    }
+    window.addEventListener('candidate-created', onCreated)
+    return () => window.removeEventListener('candidate-created', onCreated)
+  }, [])
+
   const handleSaveJob = () => {
     setShowModal(false)
     loadJobs()
@@ -114,14 +134,25 @@ export default function JobsPage() {
 
   return (
     <div style={{ padding: 24, maxWidth: 1100, margin: '0 auto' }}>
+      {globalToast && <ToastNotification {...globalToast} onClose={() => setGlobalToast(null)} />}
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 28,
+        background: 'linear-gradient(96deg,#f7fbff 60%,#e6effa 94%)',
+        borderRadius: '1rem',
+        boxShadow: '0 2px 18px #175ce511',
+        padding: '2.1rem 2.7rem 1.5rem 2.3rem',
+        border: '1.5px solid #e4eaf5'
+      }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Jobs</h1>
-          <div style={{ color: 'var(--text-light)', fontSize: 13 }}>Manage open roles, candidates, and stages</div>
+          <h1 style={{ margin: 0, fontSize: '2.35rem', letterSpacing: 0.01, fontWeight: 900, color: '#2071c5', textShadow:'0 1px 14px #2071c52a,0 1px #fff', lineHeight: 1.1 }}>Jobs</h1>
+          <div style={{ color: '#5371ad', fontSize: 17, marginTop: 12, fontWeight: 500 }}>Manage open roles, candidates, and stages</div>
         </div>
         <div>
-          <button onClick={handleCreateJob} style={{ backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 6 }}>Create Job</button>
+          <button onClick={handleCreateJob} style={{ backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', padding: '1.1em 1.5em', borderRadius: 10, fontWeight: 700, fontSize: '1.15em', boxShadow: '0 2px 10px #185ec731', transition: 'background 0.14s' }}>Create Job</button>
         </div>
       </div>
 
@@ -271,16 +302,19 @@ const JobContent = memo(function JobContent({ job, onEdit, onArchive, updating }
         <div className="job-meta">slug: {job.slug} — status: {job.status} — tags: {(job.tags||[]).join(', ')}</div>
       </div>
 
-      <div className="job-actions" style={{ display: 'flex', gap: 8, marginLeft: 12, alignItems: 'flex-start' }}>
-        <button className="btn" onClick={() => onEdit(job)} disabled={updating}>Edit</button>
-        <button className="btn" onClick={() => onArchive(job)} disabled={updating}>
+      <div className="job-actions">
+        <button className="btn btn-archive" onClick={() => onArchive(job)} disabled={updating}>
           {updating ? <span className="spinner" aria-hidden="true"></span> : null}
           {job.status === 'active' ? 'Archive' : 'Unarchive'}
         </button>
+        <Link className="btn" to={`/jobs/${job.id}/assessment`}>
+          {job.hasAssessment ? 'Edit Assessment' : 'Create Assessment'}
+        </Link>
+        {/* Apply button should trigger CandidateModal; see JobsPage for handler */}
         <button className="btn btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('apply-to-job', { detail: job }))}>Apply</button>
       </div>
 
-      {/* small edit badge positioned in the corner */}
+      {/* Floating edit badge restored */}
       <button
         className="edit-badge"
         onClick={() => onEdit(job)}

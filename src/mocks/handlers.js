@@ -214,7 +214,7 @@ export const handlers = [
     const stage = body.stage || 'applied'
     const toAdd = {
       name: body.name || 'Unnamed Candidate',
-      email: body.email || `candidate${Date.now()}@example.com`,
+      email: body.email || `candidate${Date.now()}@gmail.com`,
       jobId: body.jobId || 1,
       stage,
       history: [{ at: now, from: null, to: stage }],

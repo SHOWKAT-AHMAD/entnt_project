@@ -22,3 +22,9 @@ export default function ToastNotification({ message, type = 'success', onClose, 
     </div>
   )
 }
+
+export function showGlobalToast(message, type = 'error', duration = 3200) {
+  try {
+    window.dispatchEvent(new CustomEvent('global-toast', { detail: { message, type, duration } }))
+  } catch {}
+}

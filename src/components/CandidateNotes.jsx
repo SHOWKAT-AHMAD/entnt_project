@@ -118,7 +118,8 @@ export default function CandidateNotes({ notes, onSave }) {
 }
 
 function renderNotesWithMentions(text) {
-  return text.split(/(@[\w\s]+)/).map((part, index) => {
+  const safeText = typeof text === 'string' ? text : (text == null ? '' : String(text))
+  return safeText.split(/(@[\w\s]+)/).map((part, index) => {
     if (part.startsWith('@')) {
       const name = part.slice(1).trim()
       const member = teamMembers.find(m => m.name === name)

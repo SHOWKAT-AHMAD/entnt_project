@@ -1,48 +1,88 @@
 .candidate-card {
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color, #e6e6e6);
-  border-radius: 8px;
-  background: var(--surface, #fff);
-  margin-bottom: 0.75rem;
+  padding: 1.3rem 1.35rem 1.1rem 1.35rem;
+  border: 1.3px solid #dde8f5;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #fff 65%, #f3f8fd 100%);
+  margin-bottom: 1rem;
   width: 100%;
+  box-shadow: 0 4px 18px #2c528218;
+  transition: box-shadow 0.19s, border 0.15s, transform 0.13s;
+  position: relative;
 }
-
+.candidate-card:hover {
+  border-color: #5bb2ed;
+  box-shadow: 0 12px 28px #438bd414, 0 2px 4px #14273b14;
+  transform: translateY(-2px) scale(1.012);
+}
 .candidate-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 0.7rem;
   width: 100%;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
-
-.candidate-name { font-weight: 600; }
-.candidate-email { font-size: 0.9rem; color: var(--muted, #666); }
-
-.candidate-meta { display:flex; gap:0.5rem; align-items:center }
-.candidate-stage { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; text-transform: capitalize }
-
-.candidate-job {
-  color: #666;
-  font-size: 0.85rem;
-  padding: 0.25rem 0.5rem;
-  background: #f0f2f5;
-  border-radius: 4px;
-  max-width: 200px;
+.candidate-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
+}
+.candidate-name { font-weight: 700; font-size: 1.17rem; color: #1865ce; margin-bottom: 1px; }
+.candidate-email { font-size: 0.96rem; color: #687ba0; }
+.candidate-meta { display:flex; gap:0.53rem; align-items:center; margin-top: 3px; }
+.candidate-stage {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 2;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #17a76a;
+  background: none;
+  border: none;
+  box-shadow: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-.stage-applied { background:#eef6ff; color:#0b63d6 }
-.stage-screen { background:#fff7e6; color:#b36b00 }
-.stage-tech { background:#f0fff4; color:#0a8a3a }
-.stage-offer { background:#fff0f6; color:#9b2c6b }
-.stage-hired { background:#e6fffa; color:#0b7762 }
-.stage-rejected { background:#fff1f2; color:#a90f2b }
-
-/* small inline spinner for per-item updating */
-.candidate-updating { position: absolute; right: 8px; top: 8px; }
+  margin-bottom: 0;
+  padding: 0;
+}
+.stage-applied     { background:#eef6ff; color:#156fea; border-color:#b3d5ff; }
+.stage-screen      { background:#fff7e6; color:#b88411; border-color:#ffe4aa; }
+.stage-tech        { background:#f0fff4; color:#1e9142; border-color:#d2fbe2; }
+.stage-offer       { background:#fff0f6; color:#902179; border-color:#ffe0f2; }
+.stage-hired       { background:#e6fffa; color:#0b8665; border-color:#cff2e5; }
+.stage-rejected    { background:#fff1f2; color:#c03d5f; border-color:#ffd7d7; }
+@media (width <= 600px) {
+  .candidate-stage { top: 9px; right: 8px; font-size: 0.89rem; }
+}
+.candidate-job {
+  color: #416699;
+  font-size: 0.92rem;
+  padding: 0.3rem 0.85rem;
+  background: #edfafc;
+  border-radius: 34px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid #d7f1fa;
+}
+.candidate-updating { position: absolute; right: 18px; top: 12px; }
+.candidate-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1.2rem;
+  width: 100%;
+  /* ensures buttons are never clipped */
+}
 
 .dot-spinner {
   width: 14px;
@@ -56,7 +96,4 @@
   0% { transform: scale(1); opacity: 1 }
   50% { transform: scale(0.7); opacity: 0.5 }
   100% { transform: scale(1); opacity: 1 }
-}
-
-.candidate-card { position: relative }
 }
