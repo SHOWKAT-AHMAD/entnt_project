@@ -4,7 +4,9 @@ import App from './App.jsx'
 import './styles.css'
 
 async function startApp() {
-  if (import.meta.env.DEV) {
+  // Enable MSW in development, and optionally in production when VITE_ENABLE_MSW=true
+  const enableMocks = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MSW === 'true'
+  if (enableMocks) {
     const { initMocks } = await import('./mocks/browser.js')
     await initMocks()
   }
