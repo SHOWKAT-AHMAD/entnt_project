@@ -104,16 +104,14 @@ export default function Home() {
       {showLogin && (
         <LoginModal 
           onClose={() => setShowLogin(false)}
-          onLogin={handleAuthSuccess}
-          onSignupClick={handleSwitchToSignup}
+          onSwitchToSignup={handleSwitchToSignup}
         />
       )}
       
       {showSignup && (
         <SignupModal 
           onClose={() => setShowSignup(false)}
-          onSignup={handleAuthSuccess}
-          onLoginClick={handleSwitchToLogin}
+          onSwitchToLogin={handleSwitchToLogin}
         />
       )}
     </div>

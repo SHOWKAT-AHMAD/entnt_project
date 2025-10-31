@@ -1,3 +1,4 @@
+/* Auth modal (responsive) */
 .auth-overlay {
   position: fixed;
   inset: 0;
@@ -7,19 +8,24 @@
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(3px);
+  padding: 1rem;
 }
 
 .auth-box {
   background-color: #fff;
-  padding: 2.8rem 2.3rem 2.4rem 2.3rem;
+  padding: 2.2rem 1.6rem 1.6rem 1.6rem;
   border-radius: 16px;
   width: 100%;
   max-width: 430px;
   box-shadow: 0 10px 38px #267de826, 0 4px 18px #2e51b420;
   border: 1.5px solid #e4e9f5;
-  animation: fadeInScale .4s cubic-bezier(.39,.575,.56,1.000) both;
-  margin: 0 1.3rem;
 }
+
+@media (width <= 480px) {
+  .auth-box { padding: 1.25rem 1rem; border-radius: 12px; }
+  .auth-actions { flex-wrap: wrap; }
+}
+
 @keyframes fadeInScale {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }

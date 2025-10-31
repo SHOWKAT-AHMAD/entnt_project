@@ -277,3 +277,33 @@
   background: rgb(255 255 255 / 70%);
   z-index: 3;
 }
+
+.btn:hover { box-shadow: 0 2px 10px rgba(2,12,31,.10); transform: translateY(-1px); transition: box-shadow .15s ease, transform .12s ease; }
+.page-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgb(0 0 0 / 10%); }
+
+@media (width <= 720px) {
+  /* Stack action buttons vertically and use full width */
+  .job-actions { margin-right: 0; gap: 10px; flex-direction: column; align-items: stretch; padding-top: 6px; }
+  .job-actions .btn { width: 100%; }
+
+  /* Reposition floating edit badge so it doesn't overlap buttons */
+  .job-card { padding-top: 48px; } /* reserve room for badge at top */
+  .edit-badge { top: 8px; right: 8px; bottom: auto; position: absolute; }
+
+  /* Center pagination on small screens */
+  .pagination-row { flex-direction: column; align-items: center; gap: 10px; }
+  .pagination-controls { justify-content: center; flex-wrap: wrap; }
+  .pagination-meta { justify-content: center; text-align: center; width: 100%; }
+}
+
+/* Badges for job details */
+.badge { display:inline-block; padding: 6px 10px; border-radius: 9999px; border:1px solid var(--border-color); background:#f8fafc; color:#334155; font-weight:600; font-size:0.85rem; }
+.badge-muted { background:#f3f4f6; color:#6b7280; border-color:#e5e7eb; }
+.badge-slug { background:#f3f4f6; color:#374151; border-color:#e5e7eb; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+.badge-status.active { background:#d1fae5; color:#065f46; border-color:#a7f3d0; text-transform:uppercase; }
+.badge-status.archived { background:#ffedd5; color:#7c2d12; border-color:#fed7aa; text-transform:uppercase; }
+.badge-tag { background:#eff6ff; color:#1d4ed8; border-color:#dbeafe; }
+
+@media (width <= 720px) {
+  .job-meta { gap: 6px; }
+}

@@ -11,6 +11,7 @@ export default function Layout() {
   const [showSignup, setShowSignup] = useState(false)
   const [user, setUser] = useState(null)
   const [initialAuthChecked, setInitialAuthChecked] = useState(false)
+  const [isNavOpen, setIsNavOpen] = useState(false)
 
   // Initial auth check - run synchronously to avoid UI flash
   if (!initialAuthChecked) {
@@ -24,6 +25,9 @@ export default function Layout() {
     const savedUser = localStorage.getItem('user')
     if (savedUser) setUser(JSON.parse(savedUser))
   }, [initialAuthChecked])
+
+  // Close mobile nav on route change
+  useEffect(() => { setIsNavOpen(false) }, [location.pathname])
 
   // Protect routes except home
   useEffect(() => {
@@ -73,36 +77,54 @@ export default function Layout() {
   return (
     <div className="app-container">
       <header className="site-header">
-        <div className="header-inner">
+        <div className={`header-inner ${isNavOpen ? 'mobile-open' : ''}`}>
           <Link to="/" className="site-brand">
             <img src="/logo.svg" alt="TalentFlow logo" style={{ width: 40, height: 40 }} />
             <h1 className="site-title">TalentFlow</h1>
           </Link>
 
-          <div className="auth-row">
+          <button
+            className={`nav-toggle ${isNavOpen ? 'open' : ''}`}
+            aria-label="Toggle navigation"
+            aria-expanded={isNavOpen}
+            aria-controls="primary-navigation"
+            type="button"
+            onClick={() => setIsNavOpen(v => !v)}
+          >
+            <span className="nav-toggle-bar" />
+            <span className="nav-toggle-bar" />
+            <span className="nav-toggle-bar" />
+          </button>
+
+          <div className={`nav-block ${isNavOpen ? 'open' : ''}`} id="primary-navigation">
             <nav className="main-nav">
               {user && (
                 <>
-                  <Link to="/jobs" className="nav-link">Jobs</Link>
-                  <Link to="/candidates" className="nav-link">Candidates</Link>
-                  <Link to="/assessments" className="nav-link">Assessments</Link>
+                  <Link to="/jobs" className={`nav-link ${location.pathname.startsWith('/jobs') ? 'active' : ''}`}>Jobs</Link>
+                  <Link to="/candidates" className={`nav-link ${location.pathname.startsWith('/candidates') ? 'active' : ''}`}>Candidates</Link>
+                  <Link to="/assessments" className={`nav-link ${location.pathname.startsWith('/assessments') ? 'active' : ''}`}>Assessments</Link>
                 </>
               )}
             </nav>
 
-            {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="user-email">{user.email}</span>
-                <button onClick={handleLogout} className="logout-btn">Logout</button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
-                <button onClick={() => setShowSignup(true)} className="signup-btn">Sign Up</button>
-              </div>
-            )}
+            <div className="auth-row">
+              {user ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <span className="user-email">{user.email}</span>
+                  <button onClick={handleLogout} className="logout-btn">Logout</button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
+                  <button onClick={() => setShowSignup(true)} className="signup-btn">Sign Up</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+        {isNavOpen && (
+          <button className="nav-overlay" aria-label="Close navigation" onClick={() => setIsNavOpen(false)} />
+        )}
       </header>
 
       <main className="site-main">
@@ -137,11 +159,11 @@ export default function Layout() {
       </footer>
 
       {showLogin && (
-        <LoginModal onClose={() => setShowLogin(false)} onLogin={handleLoginSuccess} onSignupClick={switchToSignup} />
+        <LoginModal onClose={() => setShowLogin(false)} onSwitchToSignup={switchToSignup} />
       )}
 
       {showSignup && (
-        <SignupModal onClose={() => setShowSignup(false)} onSignup={handleLoginSuccess} onLoginClick={switchToLogin} />
+        <SignupModal onClose={() => setShowSignup(false)} onSwitchToLogin={switchToLogin} />
       )}
     </div>
   )

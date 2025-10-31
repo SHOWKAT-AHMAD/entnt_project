@@ -299,7 +299,17 @@ const JobContent = memo(function JobContent({ job, onEdit, onArchive, updating }
     <>
       <div style={{ flex: 1, paddingRight: 120 }}>
         <Link to={`/jobs/${job.id}`} className="job-title"><strong>{job.title}</strong></Link>
-        <div className="job-meta">slug: {job.slug} — status: {job.status} — tags: {(job.tags||[]).join(', ')}</div>
+        <div className="job-meta" style={{display:'flex', flexWrap:'wrap', gap:8, alignItems:'center'}}>
+          <span className="badge badge-slug">slug: {job.slug}</span>
+          <span className={`badge badge-status ${job.status === 'active' ? 'active' : 'archived'}`}>{job.status}</span>
+          {(job.tags || []).length > 0 ? (
+            (job.tags || []).map((t, i) => (
+              <span key={i} className="badge badge-tag">{t}</span>
+            ))
+          ) : (
+            <span className="badge badge-muted">no tags</span>
+          )}
+        </div>
       </div>
 
       <div className="job-actions">

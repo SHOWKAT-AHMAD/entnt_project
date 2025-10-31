@@ -1,76 +1,47 @@
-:root {
-  --primary-color: #007bff;
-  --danger-color: #dc3545;
-  --text-color: #333;
-  --text-light: #666;
-  --border-color: #eee;
-  --background-light: #f8f9fa;
-  --max-width: 1200px;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Global reset & responsive base */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+html { font-size: 16px; }
+@media (width <= 720px) { html { font-size: 15px; } }
+@media (width <= 480px) { html { font-size: 14px; } }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.5;
-  color: var(--text-color);
-  background-color: #fff;
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text-color, #1f2937);
+  background: var(--background, #f7f9fc);
 }
 
-a {
-  color: var(--primary-color);
-  text-decoration: none;
+img, video { max-width: 100%; height: auto; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-a:hover {
-  text-decoration: underline;
+:root {
+  --primary-color: #1b6fe4;
+  --primary-color-dark: #155cc0;
+  --border-color: #e5e7eb;
+  --text-light: #6b7280;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
+/* Utilities */
+.hidden-sm { display: initial; }
+@media (width <= 720px) { .hidden-sm { display: none !important; } }
 
-button:hover {
-  background-color: var(--background-light);
-}
+.stack { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
-/* keep danger buttons readable on hover */
-.btn-danger:hover {
-  background-color: #b02a37; /* slightly darker red */
-  color: #fff;
-}
+/* Forms: ensure inputs scale on small screens */
+input, select, textarea, button { font: inherit; }
+button { cursor: pointer; }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Cards responsive padding helper */
+.card {
+  background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+  padding: 1.25rem;
 }
-
-input, select {
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Jobs page specific styles moved to src/pages/Jobs.css */
+@media (width <= 720px) { .card { padding: 1rem; } }
